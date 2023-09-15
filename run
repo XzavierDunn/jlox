@@ -1,4 +1,4 @@
 #!/bin/bash
 javac -d ./out ./lox/Lox.java
 cd ./out
-java lox.Lox
+java lox.Lox $1
