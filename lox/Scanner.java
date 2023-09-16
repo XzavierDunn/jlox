@@ -99,7 +99,7 @@ public class Scanner {
                     while (peek() != '\n' && !isAtEnd())
                         advance();
                 } else if (match('*')) {
-                    multiLineComment();
+                    multilineComment();
                 } else {
                     addToken(SLASH);
                 }
@@ -170,10 +170,34 @@ public class Scanner {
         addToken(STRING, value);
     }
 
-    private void multiLineComment() {
-        while (!(peek() == '*' && peekNext() == '/') && !isAtEnd()) {
-            if (peek() == '\n')
+    private boolean multilineStart() {
+        return peek() == '/' && peekNext() == '*';
+    }
+
+    private boolean multilineEnd() {
+        return peek() == '*' && peekNext() == '/';
+    }
+
+    private void multilineComment() {
+        List<Integer> nested = new ArrayList<>();
+        boolean charEnd = multilineEnd();
+        while (!charEnd && !isAtEnd()) {
+            if (peek() == '\n') {
                 line++;
+            }
+
+            if (multilineEnd()) {
+                if (nested.size() > 0) {
+                    nested.remove(nested.size() - 1);
+                } else {
+                    charEnd = true;
+                }
+            }
+
+            if (multilineStart()) {
+                nested.add(1);
+            }
+
             advance();
         }
 
@@ -182,8 +206,7 @@ public class Scanner {
             return;
         }
 
-        current++;
-        advance();
+        current += 2;
     }
 
     private boolean match(char expected) {
