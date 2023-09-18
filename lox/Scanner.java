@@ -98,6 +98,8 @@ public class Scanner {
                 if (match('/')) {
                     while (peek() != '\n' && !isAtEnd())
                         advance();
+                } else if (match('*')) {
+                    multilineComment();
                 } else {
                     addToken(SLASH);
                 }
@@ -166,6 +168,45 @@ public class Scanner {
 
         String value = source.substring(start + 1, current - 1);
         addToken(STRING, value);
+    }
+
+    private boolean multilineStart() {
+        return peek() == '/' && peekNext() == '*';
+    }
+
+    private boolean multilineEnd() {
+        return peek() == '*' && peekNext() == '/';
+    }
+
+    private void multilineComment() {
+        List<Integer> nested = new ArrayList<>();
+        boolean charEnd = multilineEnd();
+        while (!charEnd && !isAtEnd()) {
+            if (peek() == '\n') {
+                line++;
+            }
+
+            if (multilineEnd()) {
+                if (nested.size() > 0) {
+                    nested.remove(nested.size() - 1);
+                } else {
+                    charEnd = true;
+                }
+            }
+
+            if (multilineStart()) {
+                nested.add(1);
+            }
+
+            advance();
+        }
+
+        if (isAtEnd()) {
+            Lox.error(line, "Unterminated multi-line comment.");
+            return;
+        }
+
+        current += 2;
     }
 
     private boolean match(char expected) {

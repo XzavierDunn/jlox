@@ -1,4 +1,26 @@
 #!/bin/bash
-javac -d ./out ./lox/Lox.java
-cd ./out
-java lox.Lox
+
+build_tool() {
+    javac -d ./tool/out ./tool/GenerateAst.java
+}
+
+run_tool() {
+    cd ./tool/out
+    java tool.GenerateAst ../../lox
+}
+
+if [ "$1" == 'build-tool' ]
+then
+    build_tool
+elif [ "$1" == 'run-tool' ]
+then
+    run_tool
+elif [ "$1" == 'tool' ]
+then
+    build_tool
+    run_tool
+else
+    javac -d ./out ./lox/Lox.java
+    cd ./out
+    java lox.Lox $1
+fi
