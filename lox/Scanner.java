@@ -179,7 +179,7 @@ public class Scanner {
     }
 
     private void multilineComment() {
-        List<Integer> nested = new ArrayList<>();
+        Integer nested = 0;
         boolean charEnd = multilineEnd();
         while (!charEnd && !isAtEnd()) {
             if (peek() == '\n') {
@@ -187,15 +187,15 @@ public class Scanner {
             }
 
             if (multilineEnd()) {
-                if (nested.size() > 0) {
-                    nested.remove(nested.size() - 1);
+                if (nested > 0) {
+                    nested--;
                 } else {
                     charEnd = true;
                 }
             }
 
             if (multilineStart()) {
-                nested.add(1);
+                nested++;
             }
 
             advance();
