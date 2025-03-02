@@ -112,7 +112,10 @@ public class Scanner {
                 line++;
                 break;
             case '"':
-                string();
+                string('"');
+                break;
+            case '\'':
+                string('\'');
                 break;
             default:
                 if (isDigit(c)) {
@@ -152,8 +155,8 @@ public class Scanner {
         addToken(NUMBER, Double.parseDouble(source.substring(start, current)));
     }
 
-    private void string() {
-        while (peek() != '"' && !isAtEnd()) {
+    private void string(char quoteType) {
+        while (peek() != quoteType && !isAtEnd()) {
             if (peek() == '\n')
                 line++;
             advance();

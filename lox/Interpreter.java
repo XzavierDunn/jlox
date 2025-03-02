@@ -53,7 +53,11 @@ class Interpreter implements Expr.Visitor<Object> {
                     return (double) left + (double) right;
                 }
 
-                if (left instanceof String && right instanceof String) {
+                // auto convert side to string if other doesn't match
+                if (left instanceof String || right instanceof String) {
+                    left = stripTextDoubleDot(String.valueOf(left));
+                    right = stripTextDoubleDot(String.valueOf(right));
+
                     return (String) left + (String) right;
                 }
 
@@ -81,15 +85,20 @@ class Interpreter implements Expr.Visitor<Object> {
             return false;
         return a.equals(b);
     }
+
+    private String stripTextDoubleDot(String text) {
+        if (text.endsWith(".0")) {
+            text = text.substring(0, text.length() - 2);
+        }
+
+        return text;
+    }
     
     private String stringify(Object object) {
         if (object == null) return "nil";
 
         if (object instanceof Double) {
-            String text = object.toString();
-            if (text.endsWith(".0")) {
-                text = text.substring(0, text.length() - 1);
-            }
+            String text = stripTextDoubleDot(object.toString());
             return text;
         }
 
