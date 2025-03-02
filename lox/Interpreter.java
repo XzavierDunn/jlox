@@ -64,6 +64,8 @@ class Interpreter implements Expr.Visitor<Object> {
                 throw new RuntimeError(expr.operator, "Operands must be two numbers or two strings.");
             case SLASH:
                 checkNumberOperands(expr.operator, left, right);
+                if (right.equals(0.0)) return new RuntimeError(expr.operator, "Can't divide by zero.");
+
                 return (double) left / (double) right;
             case STAR:
                 checkNumberOperands(expr.operator, left, right);
